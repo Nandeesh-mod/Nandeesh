@@ -1,0 +1,354 @@
+;ALP to find the factorial of a number(Unsigned decimal int use maadu)
+
+	AREA DATA1, DATA, READWRITE
+
+N DCD 0            ;R2
+
+FACT DCD 0         ;R4
+
+
+
+	AREA RESET, CODE, READONLY
+
+LP       LDR R0, =N
+
+         LDR R1,[R0]      ;R1=N
+
+		 BL FACTFUN       ;factsub()
+
+		 LDR R0, =FACT
+
+		 STR R3, [R0]     ;FACT=factsub(n)
+
+		 B LP
+
+
+
+FACTFUN  MOV R3, #1       ;f=1
+
+LOOPI    CMP R1, #1       ;if(R1>1)
+
+		 MULGT R3,R1,R3   ;f=f*n
+
+		 SUBGT R1,R1,#1   ;n=n-1
+
+		 BGT LOOPI
+
+		 MOV PC,R14
+
+		 END
+
+;int factsub(int n)
+
+;{
+
+;int f=1;
+
+;while(n>1)
+
+;{
+
+;   f=f*n;
+
+;   n--;
+
+;}
+
+;return f;
+
+;}
+
+
+
+***********************************************************************************
+
+;ALP to find the sum of 32 bit array elements
+
+	AREA DATA1, DATA, READWRITE
+
+N1 DCD 0
+
+ARRSUM DCD 0
+
+ARR DCD 0,0,0,0
+
+
+
+	AREA RESET, CODE, READONLY
+
+ENTRY
+
+LP			LDR R0, =N1
+
+            LDR R1, [R0]
+
+			LDR R0, =ARR
+
+			MOV R3, #00
+
+LOOP1       CMP R1, #0
+
+            BLE ENDLOOP
+
+			LDR R4, [R0]
+
+			ADD R3, R3,R4
+
+			SUB R1,R1, #1
+
+			ADD R0, R0, #4
+
+			B LOOP1
+
+ENDLOOP		LDR R0, =ARRSUM
+
+			STR R3, [R0]
+
+			B   LP
+
+			END
+
+************************************************************************			
+;ALP to find the square of numbers from 1 to 10
+
+    AREA DATAT, DATA, READONLY
+
+TABLE DCB 1, 4, 9, 16, 25, 36, 49, 64, 81, 100
+
+	AREA DATA1, DATA , READWRITE
+
+NUM DCB 0
+
+SQUARE DCB 0
+
+
+
+	AREA RESET, CODE, READONLY
+
+ENTRY 
+
+LP    LDR R0,=TABLE
+
+      LDR R1, =NUM
+
+	  LDRB R2,[R1]
+
+	  SUB R2,R2,#1
+
+	  ADD R0,R0,R2
+
+	  LDRB R3,[R0]
+
+	  LDR R0,=SQUARE
+
+	  STRB R3,[R0]
+
+	  B LP
+
+	  END
+	  
+********************************************************************************
+
+;ALP to find smallest and largest element in an array(output ge unsigned long decimal alli maadu) 
+
+	AREA DATA1, DATA, READWRITE
+
+N1 DCD 0
+
+SMALL DCD 0
+
+AR
+
+RAY DCD 0,0
+
+	AREA RESET, CODE, READONLY
+
+ENTRY
+
+LP       LDR R0,=N1
+
+         LDR R1,[R0]                      ;ARRAY SIZE N , R1=N
+
+		 LDR R0,=ARRAY
+
+		 LDR R3,[R0],#4                   ;SMALL=ARRAY[0]   R3=ARRAY[0] , R0=R0+4 , X=ARRAY[I++]
+
+LOOP1    CMP R1,#1                        ;R1-1
+
+         BLE ENDLOOP                      ;IF R1<=1,GOTO ENDLOOP
+
+		 LDR R4,[R0],#4                   ;R4=ARRAY[I++]   R0=R0+4
+
+		 CMP R3,R4                        ;R3-R4
+
+	 MOVGE R3,R4                      ;IF R3>=R4 THEN R3=R4
+
+		 SUB R1,R1,#1                     ;N--
+
+		 B LOOP1
+
+ENDLOOP	 LDR R0,=SMALL
+
+		 STR R3,[R0]                      ;STORE SMALLEST ELEMENT TO SMALL
+
+		 B LP
+
+		 END
+
+		 ;int ARRAY[100],N=4,SMALL=ARRAY[0]
+
+		 ;I=1
+
+		 ;while(N>=1)
+
+		 ;{
+
+		 ;  if(SMALL>=ARRAY[I])
+
+		 ;	     SMALL=ARRAY[I];
+
+		 ;   N--;		 
+
+		 ;}
+		 
+ *************************************************************************************************************************************************************
+ 
+ ;largest in array
+
+	AREA DATA1, DATA, READWRITE
+
+N1 DCD 0
+
+RES DCD 0
+
+ARRAY DCD 0,0
+
+	AREA RESET, CODE, READONLY
+
+ENTRY
+
+LP		LDR R0, =N1
+
+        LDR R1, [R0]
+
+        LDR R0, =ARRAY
+
+		LDR R3, [R0], #4
+
+LOOP1   CMP R1, #1
+
+        BLE ENDLOOP
+
+		LDR R4, [R0], #4
+
+		CMP R3, R4   ;R3< R4
+
+        MOVLT R3, R4
+
+          ;ADD R2, R2, #4
+
+        SUB R1, R1, #1
+
+        B LOOP1
+
+             
+
+ENDLOOP LDR R0, =RES
+
+        STR R3, [R0]
+
+        B LP
+
+        END
+  *************************************************************************************************************************************************************
+
+;ALP to sort elements in Ascending order
+
+	AREA DATA1, DATA, READWRITE
+
+NE DCD 0
+
+ARRAY DCD 0,0,0
+
+
+
+	AREA RESET, CODE, READONLY
+
+LP       LDR R0,=NE
+
+         LDR R5,[R0]      ;R5=NE
+
+		 MOV R1,#00       ;I=0
+
+		 SUB R6,R5,#1     ;R6=NE-1
+
+LOOP0    CMP R1,R6        
+
+         BGE EXITOL
+
+		 MOV R2,R1        ;R2==I=R1
+
+		 ADD R2,R2,#1     ;R2=I+1
+
+LOOPI    CMP R2,R5
+
+         BGE EXITIL
+
+		 LDR R0,=ARRAY    ;BASE ADDRESS OF ARRAY
+
+		 MOV R3,R1
+
+		 LSL R3,#2        ;R3=R3+4
+
+		 ADD R3,R3,R0     ;R3=BASE+R3
+
+		 LDR R7,[R3]      ;R7=AYYAY R[I]   
+
+		 MOV R4,R2
+
+		 LSL R4,#2
+
+		 ADD R4,R4,R0
+
+		 LDR R8,[R4]      ;R8=ARRAY[J]
+
+		 CMP R7,R8
+
+		 BLE NOSWAP
+
+		 STR R7,[R4]      ;SWAP ARRAY[I],ARRAY[J]
+
+		 STR R8,[R3]
+
+NOSWAP	 ADD R2,#1
+
+         B LOOPI
+
+EXITIL   ADD R1,#1
+
+         B LOOP0
+
+EXITOL   B LP
+
+         END
+
+	 
+
+;for(I=0;I<NE-1;I++)
+
+;  for(J=I+1;J<N;J++)
+
+;     if(ARRAY[I]>ARRAY[J])
+
+;	  {
+
+;	  TEMP=ARRAY[I];
+
+;	  ARRAY[I]=ARRAY[J];
+
+;	  ARRAY[J]=TEMP;
+
+
+********************************************************************************************************************************************************
+
+ 
